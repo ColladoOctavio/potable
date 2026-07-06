@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 260" role="img" aria-labelledby="title desc">
+  <title id="title">PoTable</title>
+  <desc id="desc">Logo de PoTable con una papa, brote verde y una tabla contable.</desc>
+  <defs>
+    <linearGradient id="potato" x1="48" y1="221" x2="180" y2="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d99923"/>
+      <stop offset=".55" stop-color="#efb743"/>
+      <stop offset="1" stop-color="#dfa32c"/>
+    </linearGradient>
+    <linearGradient id="leaf-right" x1="126" y1="84" x2="162" y2="31" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#639f22"/>
+      <stop offset="1" stop-color="#8ac02b"/>
+    </linearGradient>
+    <linearGradient id="leaf-left" x1="103" y1="81" x2="75" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5f9d21"/>
+      <stop offset="1" stop-color="#82bb28"/>
+    </linearGradient>
+    <linearGradient id="gold-text" x1="304" y1="88" x2="468" y2="178" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f0b941"/>
+      <stop offset="1" stop-color="#d89a22"/>
+    </linearGradient>
+    <linearGradient id="dark-text" x1="476" y1="78" x2="820" y2="184" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#34383b"/>
+      <stop offset="1" stop-color="#18191a"/>
+    </linearGradient>
+    <clipPath id="table-window">
+      <rect x="67" y="119" width="116" height="74" rx="15"/>
+    </clipPath>
+  </defs>
+
+  <g>
+    <path fill="url(#potato)" d="M57 218c-31-21-37-58-17-88 11-16 17-35 28-50 18-27 50-35 79-23 31 13 50 36 57 70 5 25 18 47 13 72-9 39-45 55-92 57-29 2-52-8-68-38Z"/>
+
+    <g>
+      <path fill="none" stroke="#73a928" stroke-width="7" stroke-linecap="round" d="M119 58c4-16 20-27 50-32"/>
+      <path fill="url(#leaf-left)" d="M120 63c-12-17-35-22-56-17 1 27 27 45 52 37 7-3 9-11 4-20Z"/>
+      <path fill="url(#leaf-right)" d="M143 39c18-22 46-28 65-22 0 31-25 60-61 60-10 0-16-3-19-8 1-11 6-21 15-30Z"/>
+    </g>
+
+    <ellipse cx="72" cy="145" rx="9" ry="6" fill="#ad791d" opacity=".45" transform="rotate(-14 72 145)"/>
+    <ellipse cx="103" cy="89" rx="9" ry="6" fill="#ad791d" opacity=".38" transform="rotate(-13 103 89)"/>
+    <ellipse cx="179" cy="100" rx="6" ry="4" fill="#ad791d" opacity=".43" transform="rotate(20 179 100)"/>
+    <ellipse cx="206" cy="143" rx="6" ry="8" fill="#ad791d" opacity=".34" transform="rotate(-10 206 143)"/>
+    <ellipse cx="81" cy="189" rx="8" ry="6" fill="#ad791d" opacity=".34" transform="rotate(18 81 189)"/>
+
+    <g stroke="#273037" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="67" y="149" width="116" height="44" fill="#fff7df" fill-opacity=".72" stroke="none" clip-path="url(#table-window)"/>
+      <rect x="67" y="119" width="116" height="74" rx="15" fill="none" stroke-width="8"/>
+      <path fill="none" stroke-width="7" d="M68 149h114M68 172h114M125 120v72"/>
+      <path fill="none" stroke-width="6" d="M96 149v43"/>
+    </g>
+  </g>
+
+  <g font-family="Arial Rounded MT Bold, Nunito Sans, Arial, sans-serif" font-weight="800">
+    <text x="304" y="171" font-size="110" fill="url(#gold-text)">Po</text>
+    <text x="444" y="171" font-size="110" fill="url(#dark-text)">Table</text>
+  </g>
+</svg>

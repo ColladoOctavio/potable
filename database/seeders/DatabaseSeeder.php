@@ -3,23 +3,44 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Services\Tenant\TenantProvisioner;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@potable.test'],
+            ['name' => 'Admin PoTable', 'password' => 'password', 'is_platform_admin' => true],
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $demo = User::updateOrCreate(
+            ['email' => 'demo@potable.test'],
+            ['name' => 'Demo Papero', 'password' => 'password', 'is_platform_admin' => false],
+        );
+
+        $provisioner = app(TenantProvisioner::class);
+
+        $tenants = collect([
+            $provisioner->createTenant('Los Pinos Papas', 'los-pinos', 'activo', $admin->id),
+            $provisioner->createTenant('Pampa Sur Productores', 'pampa-sur', 'prueba', $admin->id),
         ]);
+
+        foreach ($tenants as $tenant) {
+            $provisioner->ensureDatabase($tenant);
+        }
+
+        $admin->tenants()->syncWithoutDetaching($tenants->mapWithKeys(fn ($tenant) => [
+            $tenant->id => ['rol' => 'administrador'],
+        ])->all());
+
+        $demo->tenants()->sync([
+            $tenants->first()->id => ['rol' => 'administrador'],
+        ]);
+
+        Artisan::call('tenants:migrate');
+        Artisan::call('tenants:seed');
     }
 }

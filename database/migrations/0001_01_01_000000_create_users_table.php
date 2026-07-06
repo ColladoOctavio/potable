@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('is_platform_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -35,6 +36,29 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        Schema::create('tenants', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('nombre');
+            $table->string('slug')->unique();
+            $table->string('database_name')->unique();
+            $table->string('tenancy_db_name')->unique();
+            $table->enum('estado', ['activo', 'suspendido', 'prueba'])->default('prueba');
+            $table->foreignId('owner_user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->json('data')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('tenant_user', function (Blueprint $table) {
+            $table->id();
+            $table->string('tenant_id');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('rol')->default('administrador');
+            $table->timestamps();
+
+            $table->unique(['tenant_id', 'user_id']);
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnDelete();
+        });
     }
 
     /**
@@ -42,8 +66,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('tenant_user');
+        Schema::dropIfExists('tenants');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('users');
     }
 };

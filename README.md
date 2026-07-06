@@ -1,58 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PoTable
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+PoTable es una primera maqueta funcional de SaaS contable simple para productores o empresas paperas.
 
-## About Laravel
+Stack principal:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel, Blade y Livewire
+- Bootstrap 5
+- MySQL con Docker
+- Eloquent, migraciones y seeders
+- Multi-database tenancy con `stancl/tenancy`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Puesta en marcha
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+docker compose up -d
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed --force
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+La app queda disponible en:
 
-## Contributing
+```text
+http://127.0.0.1:8000
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+El layout carga Bootstrap por CDN y CSS propio desde `public/css/potable.css`, por lo que puede navegarse sin compilar assets. Vite queda configurado para desarrollo de assets; requiere Node 20.19+ por las versiones actuales de Vite/Laravel Vite.
 
-## Code of Conduct
+```bash
+npm install
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## MySQL local
 
-## Security Vulnerabilities
+`docker-compose.yml` levanta solo MySQL:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Contenedor: `potable_db`
+- Host: `127.0.0.1`
+- Puerto local: `3307`
+- Base central: `potable_central`
+- Usuario: `potable`
+- Password: `secret`
 
-## License
+El init SQL otorga permisos para crear bases `potable_tenant_*`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Usuario demo
+
+```text
+admin@potable.test / password  # administrador de plataforma, ve todos los tenants
+demo@potable.test / password   # usuario cliente, entra a un unico tenant
+```
+
+## Tenants demo
+
+El seeder central crea:
+
+- `los-pinos` / base `potable_tenant_los_pinos`
+- `pampa-sur` / base `potable_tenant_pampa_sur`
+
+Cada tenant se carga con empresas, lotes, clientes, proveedores, categorias, ventas, gastos, cuenta unica y movimientos.
+
+## Modelo de acceso
+
+- Un usuario cliente pertenece a un unico tenant.
+- Un tenant puede tener muchos usuarios.
+- Dentro de un tenant se pueden administrar muchas empresas.
+- Solo los usuarios con `is_platform_admin = true` pueden seleccionar entre todos los tenants del SaaS.
+
+## Crear un tenant nuevo
+
+```bash
+php artisan potable:tenant "Nombre del Tenant" nombre-del-tenant --owner=admin@potable.test --estado=prueba --seed
+```
+
+El comando crea el registro central, la base `potable_tenant_nombre_del_tenant`, ejecuta migraciones tenant y opcionalmente carga datos demo con `--seed`.
+
+## Modulos incluidos
+
+- Login central y logout
+- Seleccion de tenant
+- Dashboard con selector de empresa o vista consolidada
+- CRUDs de empresas, lotes, clientes, proveedores y categorias de gasto
+- Formularios Livewire de ventas, gastos y movimientos de cuenta
+- Cuenta unica por empresa con saldo calculado
+- Reportes general, ventas, gastos, clientes, proveedores y lotes
+
+## Verificacion
+
+```bash
+php artisan test
+php artisan view:cache
+```
+
+En el entorno usado para esta maqueta, `npm run build` queda bloqueado por Node `18.19.1`; Vite 8 requiere Node `20.19+`.
