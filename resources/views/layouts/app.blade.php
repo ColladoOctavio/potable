@@ -78,7 +78,10 @@
                 @else
                     <span class="badge text-bg-warning">Sin empresas</span>
                 @endif
-                <a href="{{ route('tenants.index') }}" class="btn btn-outline-secondary btn-sm">Cambiar tenant</a>
+                @if(auth()->user()->isPlatformAdmin())
+                    <a href="{{ route('admin.clientes-saas.index') }}" class="btn btn-outline-secondary btn-sm">Clientes SaaS</a>
+                    <a href="{{ route('tenants.index') }}" class="btn btn-outline-secondary btn-sm">Cambiar tenant</a>
+                @endif
                 <span class="small text-muted">{{ auth()->user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

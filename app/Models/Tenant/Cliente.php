@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Stancl\Tenancy\Database\Concerns\TenantConnection;
 
 class Cliente extends Model
@@ -21,5 +22,10 @@ class Cliente extends Model
     public function ventas(): HasMany
     {
         return $this->hasMany(Venta::class);
+    }
+
+    public function movimientos(): MorphMany
+    {
+        return $this->morphMany(MovimientoCuenta::class, 'origen');
     }
 }

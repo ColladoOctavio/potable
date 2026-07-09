@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Central\SaasClientController;
 use App\Http\Controllers\Central\TenantSelectionController;
 use App\Http\Controllers\Tenant\CrudController;
 use App\Http\Controllers\Tenant\CuentaController;
@@ -21,6 +22,10 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->
 Route::middleware('auth')->group(function () {
     Route::get('/tenants', [TenantSelectionController::class, 'index'])->name('tenants.index');
     Route::post('/tenants/{tenant}/seleccionar', [TenantSelectionController::class, 'seleccionar'])->name('tenants.seleccionar');
+
+    Route::get('/admin/clientes-saas', [SaasClientController::class, 'index'])->name('admin.clientes-saas.index');
+    Route::get('/admin/clientes-saas/crear', [SaasClientController::class, 'create'])->name('admin.clientes-saas.create');
+    Route::post('/admin/clientes-saas', [SaasClientController::class, 'store'])->name('admin.clientes-saas.store');
 });
 
 Route::middleware(['auth', 'tenant.selected', 'empresa.active'])->group(function () {
@@ -39,7 +44,6 @@ Route::middleware(['auth', 'tenant.selected', 'empresa.active'])->group(function
     Route::view('/gastos', 'tenant.gastos.index')->name('gastos.index');
     Route::view('/ventas', 'tenant.ventas.index')->name('ventas.index');
     Route::get('/cuenta', [CuentaController::class, 'show'])->name('cuenta.show');
-    Route::redirect('/movimientos-cuenta', '/cuenta')->name('movimientos-cuenta.index');
 
     Route::get('/reportes/general', [ReporteController::class, 'general'])->name('reportes.general');
     Route::get('/reportes/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');

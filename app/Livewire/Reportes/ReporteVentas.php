@@ -12,7 +12,7 @@ class ReporteVentas extends Component
 {
     use WithPagination;
 
-    public array $filtros = ['cliente_id' => '', 'lote_id' => '', 'estado_cobro' => '', 'desde' => '', 'hasta' => ''];
+    public array $filtros = ['cliente_id' => '', 'lote_id' => '', 'desde' => '', 'hasta' => ''];
 
     public function render()
     {
@@ -21,12 +21,10 @@ class ReporteVentas extends Component
             ->where('empresa_id', $empresaId)
             ->when($this->filtros['cliente_id'], fn ($q, $v) => $q->where('cliente_id', $v))
             ->when($this->filtros['lote_id'], fn ($q, $v) => $q->where('lote_id', $v))
-            ->when($this->filtros['estado_cobro'], fn ($q, $v) => $q->where('estado_cobro', $v))
             ->when($this->filtros['desde'], fn ($q, $v) => $q->whereDate('fecha', '>=', $v))
             ->when($this->filtros['hasta'], fn ($q, $v) => $q->whereDate('fecha', '<=', $v));
 
         $summary = (clone $query)->selectRaw('sum(importe_total) total, sum(kilos) kilos, avg(precio_por_kg) promedio')->first();
-        $cobrado = (clone $query)->where('estado_cobro', 'cobrada')->sum('importe_total');
 
         return view('livewire.reportes.reporte-ventas', [
             'clientes' => Cliente::where('empresa_id', $empresaId)->orderBy('nombre')->get(),
@@ -34,8 +32,6 @@ class ReporteVentas extends Component
             'ventas' => $query->latest('fecha')->paginate(12),
             'summary' => [
                 'total' => (float) $summary->total,
-                'cobrado' => (float) $cobrado,
-                'pendiente' => max((float) $summary->total - (float) $cobrado, 0),
                 'kilos' => (float) $summary->kilos,
                 'promedio' => (float) $summary->promedio,
             ],

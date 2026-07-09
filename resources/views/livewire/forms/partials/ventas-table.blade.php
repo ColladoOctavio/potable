@@ -2,7 +2,7 @@
     @if($ventas->count())
         <div class="table-responsive">
             <table class="table table-hover">
-                <thead><tr><th>Fecha</th><th>Empresa</th><th>Cliente</th><th>Descripcion</th><th>Kilos</th><th>Total</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+                <thead><tr><th>Fecha</th><th>Empresa</th><th>Cliente</th><th>Descripcion</th><th>Kilos</th><th>Total</th><th class="text-end">Acciones</th></tr></thead>
                 <tbody>
                 @foreach($ventas as $venta)
                     <tr>
@@ -12,7 +12,6 @@
                         <td>{{ $venta->descripcion }}</td>
                         <td>{{ number_format($venta->kilos, 0, ',', '.') }}</td>
                         <td>{{ $money($venta->importe_total) }}</td>
-                        <td><span class="badge text-bg-info status-badge">{{ $venta->estado_cobro }}</span></td>
                         <td class="text-end"><button wire:click="edit({{ $venta->id }})" class="btn btn-sm btn-outline-primary">Editar</button><button wire:click="delete({{ $venta->id }})" wire:confirm="Confirmar eliminacion" class="btn btn-sm btn-outline-danger">Eliminar</button></td>
                     </tr>
                 @endforeach

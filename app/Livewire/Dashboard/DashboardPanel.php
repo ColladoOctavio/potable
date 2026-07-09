@@ -23,10 +23,24 @@ class DashboardPanel extends Component
 
         $totalVentas = (float) (clone $ventas)->sum('importe_total');
         $totalGastos = (float) (clone $gastos)->sum('importe_total');
-        $totalCobrado = (float) (clone $movimientos)->where('tipo', 'ingreso')->sum('importe');
-        $totalPagado = (float) (clone $movimientos)->where('tipo', 'egreso')->sum('importe');
+        $ingresosCuenta = (float) (clone $movimientos)->where('tipo', 'ingreso')->sum('importe');
+        $egresosCuenta = (float) (clone $movimientos)->where('tipo', 'egreso')->sum('importe');
+        $totalCobrado = (float) MovimientoCuenta::where('empresa_id', $empresaId)->where('tipo', 'ingreso')->where('origen_type', Cliente::class)->sum('importe');
+        $totalPagado = (float) MovimientoCuenta::where('empresa_id', $empresaId)->where('tipo', 'egreso')->where('origen_type', Proveedor::class)->sum('importe');
         $saldoInicial = (float) (clone $cuentas)->sum('saldo_inicial');
         $ajustes = (float) (clone $movimientos)->where('tipo', 'ajuste')->sum('importe');
+        $clientesConSaldo = Cliente::where('empresa_id', $empresaId)->get()->map(function (Cliente $cliente) {
+            $ventas = (float) Venta::where('cliente_id', $cliente->id)->sum('importe_total');
+            $cobros = (float) MovimientoCuenta::where('origen_type', Cliente::class)->where('origen_id', $cliente->id)->where('tipo', 'ingreso')->sum('importe');
+
+            return (float) $cliente->saldo_inicial + $cobros - $ventas;
+        });
+        $proveedoresConSaldo = Proveedor::where('empresa_id', $empresaId)->get()->map(function (Proveedor $proveedor) {
+            $gastos = (float) Gasto::where('proveedor_id', $proveedor->id)->sum('importe_total');
+            $pagos = (float) MovimientoCuenta::where('origen_type', Proveedor::class)->where('origen_id', $proveedor->id)->where('tipo', 'egreso')->sum('importe');
+
+            return (float) $proveedor->saldo_inicial + $gastos - $pagos;
+        });
         $hectareas = (float) Empresa::query()
             ->when($empresaId, fn ($q) => $q->whereKey($empresaId))
             ->withSum('lotes', 'hectareas')
@@ -38,16 +52,16 @@ class DashboardPanel extends Component
             'metrics' => [
                 'ventas' => $totalVentas,
                 'cobrado' => $totalCobrado,
-                'pendiente_cobro' => max($totalVentas - $totalCobrado, 0),
+                'pendiente_cobro' => $clientesConSaldo->filter(fn (float $saldo) => $saldo < 0)->sum(fn (float $saldo) => abs($saldo)),
                 'gastos' => $totalGastos,
                 'pagado' => $totalPagado,
-                'pendiente_pago' => max($totalGastos - $totalPagado, 0),
+                'pendiente_pago' => $proveedoresConSaldo->filter(fn (float $saldo) => $saldo > 0)->sum(),
                 'resultado' => $totalVentas - $totalGastos,
-                'saldo' => $saldoInicial + $totalCobrado - $totalPagado + $ajustes,
+                'saldo' => $saldoInicial + $ingresosCuenta - $egresosCuenta + $ajustes,
                 'kilos' => (float) (clone $ventas)->sum('kilos'),
                 'costo_hectarea' => $hectareas > 0 ? $totalGastos / $hectareas : 0,
-                'clientes_deuda' => Cliente::query()->where('empresa_id', $empresaId)->whereHas('ventas', fn ($q) => $q->whereIn('estado_cobro', ['pendiente', 'parcial']))->count(),
-                'proveedores_deuda' => Proveedor::query()->where('empresa_id', $empresaId)->whereHas('gastos', fn ($q) => $q->whereIn('estado_pago', ['pendiente', 'parcial']))->count(),
+                'clientes_deuda' => $clientesConSaldo->filter(fn (float $saldo) => $saldo < 0)->count(),
+                'proveedores_deuda' => $proveedoresConSaldo->filter(fn (float $saldo) => $saldo > 0)->count(),
             ],
             'ultimasVentas' => (clone $ventas)->with(['cliente', 'lote'])->latest('fecha')->limit(6)->get(),
             'ultimosGastos' => (clone $gastos)->with(['proveedor', 'categoriaGasto'])->latest('fecha')->limit(6)->get(),

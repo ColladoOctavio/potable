@@ -14,15 +14,16 @@ class ReporteClientes extends Component
         $empresaId = $this->activeEmpresaId();
         $clientes = Cliente::with('empresa')->where('empresa_id', $empresaId)->orderBy('nombre')->get()->map(function (Cliente $cliente) {
             $ventas = (float) Venta::where('cliente_id', $cliente->id)->sum('importe_total');
-            $cobros = (float) MovimientoCuenta::where('origen_type', Venta::class)
-                ->whereIn('origen_id', Venta::where('cliente_id', $cliente->id)->select('id'))
+            $cobros = (float) MovimientoCuenta::where('origen_type', Cliente::class)
+                ->where('origen_id', $cliente->id)
+                ->where('tipo', 'ingreso')
                 ->sum('importe');
-            $saldo = (float) $cliente->saldo_inicial + $ventas - $cobros;
+            $saldo = (float) $cliente->saldo_inicial + $cobros - $ventas;
             $cliente->total_vendido = $ventas;
             $cliente->total_cobrado = $cobros;
-            $cliente->saldo_pendiente = max($saldo, 0);
-            $cliente->saldo_favor = abs(min($saldo, 0));
-            $cliente->ventas_abiertas = Venta::where('cliente_id', $cliente->id)->whereIn('estado_cobro', ['pendiente', 'parcial'])->count();
+            $cliente->saldo_pendiente = abs(min($saldo, 0));
+            $cliente->saldo_favor = max($saldo, 0);
+            $cliente->ventas_cargadas = Venta::where('cliente_id', $cliente->id)->count();
 
             return $cliente;
         });

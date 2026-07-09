@@ -79,10 +79,10 @@ class DatabaseSeeder extends Seeder
                         'cuenta_id' => $cuenta->id,
                         'fecha' => $venta->fecha,
                         'tipo' => 'ingreso',
-                        'concepto' => 'Cobro '.$venta->descripcion,
+                        'concepto' => 'Cobro de cliente '.$venta->cliente?->nombre,
                         'importe' => $venta->estado_cobro === 'cobrada' ? $venta->importe_total : round($venta->importe_total * .45, 2),
-                        'origen_type' => Venta::class,
-                        'origen_id' => $venta->id,
+                        'origen_type' => Cliente::class,
+                        'origen_id' => $venta->cliente_id,
                     ]);
                 }
             }
@@ -105,10 +105,10 @@ class DatabaseSeeder extends Seeder
                         'cuenta_id' => $cuenta->id,
                         'fecha' => $gasto->fecha,
                         'tipo' => 'egreso',
-                        'concepto' => 'Pago '.$gasto->descripcion,
+                        'concepto' => 'Pago a proveedor '.$gasto->proveedor?->nombre,
                         'importe' => $gasto->estado_pago === 'pagado' ? $gasto->importe_total : round($gasto->importe_total * .5, 2),
-                        'origen_type' => Gasto::class,
-                        'origen_id' => $gasto->id,
+                        'origen_type' => Proveedor::class,
+                        'origen_id' => $gasto->proveedor_id,
                     ]);
                 }
             }

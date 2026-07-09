@@ -61,22 +61,10 @@ class DiversifyDemoData extends Command
                 $venta->kilos = round((8500 + ($ventaIndex * 900)) * $profile['escala_ventas'], 2);
                 $venta->precio_por_kg = round((170 + ($ventaIndex * 8)) * $profile['escala_precio'], 2);
                 $venta->save();
-
-                if ($venta->estado_cobro !== 'pendiente') {
-                    MovimientoCuenta::where('origen_type', Venta::class)
-                        ->where('origen_id', $venta->id)
-                        ->update(['importe' => $venta->estado_cobro === 'cobrada' ? $venta->importe_total : round($venta->importe_total * .45, 2)]);
-                }
             });
 
             Gasto::where('empresa_id', $empresa->id)->orderBy('id')->get()->each(function (Gasto $gasto, int $gastoIndex) use ($profile) {
                 $gasto->update(['importe_total' => round((95000 + ($gastoIndex * 21500)) * $profile['escala_gastos'], 2)]);
-
-                if ($gasto->estado_pago !== 'pendiente') {
-                    MovimientoCuenta::where('origen_type', Gasto::class)
-                        ->where('origen_id', $gasto->id)
-                        ->update(['importe' => $gasto->estado_pago === 'pagado' ? $gasto->importe_total : round($gasto->importe_total * .5, 2)]);
-                }
             });
 
             MovimientoCuenta::where('empresa_id', $empresa->id)

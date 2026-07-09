@@ -16,6 +16,7 @@ class GastoManager extends Component
     use WithPagination;
 
     public ?int $editingId = null;
+    public bool $showForm = false;
 
     public array $form = [
         'empresa_id' => '',
@@ -41,14 +42,21 @@ class GastoManager extends Component
         $data['empresa_id'] = $this->activeEmpresaId();
         $data['proveedor_id'] = $data['proveedor_id'] ?: null;
         $data['lote_id'] = $data['lote_id'] ?: null;
+        $data['estado_pago'] = 'pendiente';
 
         if ($this->editingId) {
             Gasto::where('empresa_id', $this->activeEmpresaId())->findOrFail($this->editingId)->update($data);
         } else {
             Gasto::create($data);
         }
-        $this->resetForm();
+        $this->closeForm();
         session()->flash('success', 'Gasto guardado correctamente.');
+    }
+
+    public function create(): void
+    {
+        $this->resetForm();
+        $this->showForm = true;
     }
 
     public function edit(int $id): void
@@ -57,6 +65,7 @@ class GastoManager extends Component
         $this->editingId = $gasto->id;
         $this->form = $gasto->only(array_keys($this->form));
         $this->form['fecha'] = $gasto->fecha->toDateString();
+        $this->showForm = true;
     }
 
     public function delete(int $id): void
@@ -69,6 +78,13 @@ class GastoManager extends Component
         $empresa = $this->activeEmpresaId();
         $this->editingId = null;
         $this->form = ['empresa_id' => $empresa, 'proveedor_id' => '', 'lote_id' => '', 'categoria_gasto_id' => '', 'fecha' => now()->toDateString(), 'descripcion' => '', 'importe_total' => 0, 'estado_pago' => 'pendiente', 'observacion' => ''];
+        $this->resetValidation();
+    }
+
+    public function closeForm(): void
+    {
+        $this->showForm = false;
+        $this->resetForm();
     }
 
     public function render()
@@ -96,6 +112,23 @@ class GastoManager extends Component
             'form.importe_total' => ['required', 'numeric', 'min:0'],
             'form.estado_pago' => ['required', 'in:pendiente,parcial,pagado'],
             'form.observacion' => ['nullable', 'string'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'form.categoria_gasto_id.required' => 'Seleccioná una categoría.',
+            'form.categoria_gasto_id.exists' => 'Seleccioná una categoría válida.',
+            'form.fecha.required' => 'Ingresá una fecha.',
+            'form.fecha.date' => 'Ingresá una fecha válida.',
+            'form.descripcion.required' => 'Ingresá una descripción.',
+            'form.descripcion.max' => 'La descripción no puede superar los 255 caracteres.',
+            'form.importe_total.required' => 'Ingresá un importe.',
+            'form.importe_total.numeric' => 'Ingresá un importe numérico.',
+            'form.importe_total.min' => 'El importe no puede ser negativo.',
+            'form.estado_pago.required' => 'Seleccioná un estado.',
+            'form.estado_pago.in' => 'Seleccioná un estado válido.',
         ];
     }
 

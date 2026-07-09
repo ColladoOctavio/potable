@@ -14,15 +14,16 @@ class ReporteProveedores extends Component
         $empresaId = $this->activeEmpresaId();
         $proveedores = Proveedor::with('empresa')->where('empresa_id', $empresaId)->orderBy('nombre')->get()->map(function (Proveedor $proveedor) {
             $gastos = (float) Gasto::where('proveedor_id', $proveedor->id)->sum('importe_total');
-            $pagos = (float) MovimientoCuenta::where('origen_type', Gasto::class)
-                ->whereIn('origen_id', Gasto::where('proveedor_id', $proveedor->id)->select('id'))
+            $pagos = (float) MovimientoCuenta::where('origen_type', Proveedor::class)
+                ->where('origen_id', $proveedor->id)
+                ->where('tipo', 'egreso')
                 ->sum('importe');
             $saldo = (float) $proveedor->saldo_inicial + $gastos - $pagos;
             $proveedor->total_gastado = $gastos;
             $proveedor->total_pagado = $pagos;
             $proveedor->saldo_pendiente = max($saldo, 0);
             $proveedor->saldo_favor = abs(min($saldo, 0));
-            $proveedor->gastos_abiertos = Gasto::where('proveedor_id', $proveedor->id)->whereIn('estado_pago', ['pendiente', 'parcial'])->count();
+            $proveedor->gastos_cargados = Gasto::where('proveedor_id', $proveedor->id)->count();
 
             return $proveedor;
         });
