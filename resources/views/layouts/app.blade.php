@@ -24,7 +24,6 @@
         ['route' => 'gastos.index', 'label' => 'Gastos'],
         ['route' => 'ventas.index', 'label' => 'Ventas'],
         ['route' => 'cuenta.show', 'label' => 'Cuenta'],
-        ['route' => 'movimientos-cuenta.index', 'label' => 'Movimientos'],
     ];
     $reportes = [
         ['route' => 'reportes.general', 'label' => 'General'],

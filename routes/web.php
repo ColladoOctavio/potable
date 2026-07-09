@@ -38,8 +38,8 @@ Route::middleware(['auth', 'tenant.selected', 'empresa.active'])->group(function
 
     Route::view('/gastos', 'tenant.gastos.index')->name('gastos.index');
     Route::view('/ventas', 'tenant.ventas.index')->name('ventas.index');
-    Route::view('/movimientos-cuenta', 'tenant.movimientos.index')->name('movimientos-cuenta.index');
     Route::get('/cuenta', [CuentaController::class, 'show'])->name('cuenta.show');
+    Route::redirect('/movimientos-cuenta', '/cuenta')->name('movimientos-cuenta.index');
 
     Route::get('/reportes/general', [ReporteController::class, 'general'])->name('reportes.general');
     Route::get('/reportes/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');
