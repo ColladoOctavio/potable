@@ -23,6 +23,7 @@
                     <th>Estado</th>
                     <th>Usuarios</th>
                     <th>Alta</th>
+                    <th class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,13 +42,38 @@
                             @endif
                         </td>
                         <td><code>{{ $tenant->database_name }}</code></td>
-                        <td><span class="badge text-bg-light">{{ $tenant->estado }}</span></td>
+                        <td>
+                            @php
+                                $estadoClass = match ($tenant->estado) {
+                                    'activo' => 'text-bg-success',
+                                    'prueba' => 'text-bg-warning',
+                                    'suspendido' => 'text-bg-danger',
+                                    default => 'text-bg-light',
+                                };
+                            @endphp
+                            <span class="badge {{ $estadoClass }}">{{ $tenant->estado }}</span>
+                        </td>
                         <td>{{ $tenant->users_count }}</td>
                         <td>{{ $tenant->created_at?->format('d/m/Y') }}</td>
+                        <td class="text-end">
+                            @if($tenant->estado === 'suspendido')
+                                <form method="POST" action="{{ route('admin.clientes-saas.activate', $tenant) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="btn btn-outline-success btn-sm">Habilitar</button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('admin.clientes-saas.suspend', $tenant) }}" onsubmit="return confirm('Este cliente no podrá acceder a PoTable hasta que lo vuelvas a habilitar. ¿Continuar?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="btn btn-outline-danger btn-sm">Inhabilitar</button>
+                                </form>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="empty-state">Todavia no hay clientes cargados.</div>
                         </td>
                     </tr>

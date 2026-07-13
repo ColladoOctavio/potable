@@ -38,6 +38,7 @@ class MovimientoManager extends Component
 
     public function save(): void
     {
+        $this->normalizeForm();
         $data = $this->validate($this->rules())['form'];
         $data['empresa_id'] = $this->activeEmpresaId();
         $data['cuenta_id'] = Cuenta::where('empresa_id', $this->activeEmpresaId())->value('id');
@@ -114,6 +115,16 @@ class MovimientoManager extends Component
             'form.origen_id' => $origenRules,
             'form.observacion' => ['nullable', 'string'],
         ];
+    }
+
+    private function normalizeForm(): void
+    {
+        foreach ($this->form as $key => $value) {
+            if (is_string($value)) {
+                $value = trim($value);
+                $this->form[$key] = $value === '' ? null : $value;
+            }
+        }
     }
 
     private function resetForm(): void

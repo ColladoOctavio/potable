@@ -58,7 +58,7 @@ class CrudController extends Controller
                 'telefono' => ['label' => 'Telefono', 'type' => 'text'],
                 'email' => ['label' => 'Email', 'type' => 'email'],
                 'direccion' => ['label' => 'Direccion', 'type' => 'text'],
-                'saldo_inicial' => ['label' => 'Saldo inicial', 'type' => 'number', 'step' => '0.01'],
+                'saldo_inicial' => ['label' => 'Saldo inicial', 'type' => 'number', 'step' => '0.01', 'required' => true, 'default' => 0],
                 'observacion' => ['label' => 'Observacion', 'type' => 'textarea'],
             ],
             'columns' => ['empresa.nombre', 'nombre', 'cuit', 'saldo_inicial'],
@@ -76,7 +76,7 @@ class CrudController extends Controller
                 'telefono' => ['label' => 'Telefono', 'type' => 'text'],
                 'email' => ['label' => 'Email', 'type' => 'email'],
                 'direccion' => ['label' => 'Direccion', 'type' => 'text'],
-                'saldo_inicial' => ['label' => 'Saldo inicial', 'type' => 'number', 'step' => '0.01'],
+                'saldo_inicial' => ['label' => 'Saldo inicial', 'type' => 'number', 'step' => '0.01', 'required' => true, 'default' => 0],
                 'observacion' => ['label' => 'Observacion', 'type' => 'textarea'],
             ],
             'columns' => ['empresa.nombre', 'nombre', 'cuit', 'saldo_inicial'],
@@ -128,7 +128,8 @@ class CrudController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $config = $this->config($request);
-        $data = $request->validate($this->rules($config));
+        $this->normalizeRequest($request, $config);
+        $data = $request->validate($this->rules($config), $this->messages(), $this->attributes($config));
 
         if ($this->usesEmpresa($config)) {
             $data['empresa_id'] = $this->activeEmpresaId();
@@ -158,7 +159,8 @@ class CrudController extends Controller
     public function update(Request $request, int $id): RedirectResponse
     {
         $config = $this->config($request);
-        $data = $request->validate($this->rules($config));
+        $this->normalizeRequest($request, $config);
+        $data = $request->validate($this->rules($config), $this->messages(), $this->attributes($config));
 
         if ($this->usesEmpresa($config)) {
             $data['empresa_id'] = $this->activeEmpresaId();
@@ -215,6 +217,47 @@ class CrudController extends Controller
         }
 
         return $rules;
+    }
+
+    private function normalizeRequest(Request $request, array $config): void
+    {
+        $normalized = [];
+
+        foreach ($config['fields'] as $name => $field) {
+            if (! $request->exists($name)) {
+                continue;
+            }
+
+            $value = $request->input($name);
+
+            if (is_string($value)) {
+                $value = trim($value);
+                $value = $value === '' ? null : $value;
+            }
+
+            $normalized[$name] = $value;
+        }
+
+        $request->merge($normalized);
+    }
+
+    private function messages(): array
+    {
+        return [
+            'required' => 'El campo :attribute es obligatorio.',
+            'email' => 'Ingresá un email válido.',
+            'numeric' => 'El campo :attribute debe ser numérico.',
+            'gt' => 'El campo :attribute debe ser mayor a 0.',
+            'min' => 'El campo :attribute no puede ser negativo.',
+            'exists' => 'El campo :attribute seleccionado no es válido.',
+        ];
+    }
+
+    private function attributes(array $config): array
+    {
+        return collect($config['fields'])
+            ->mapWithKeys(fn (array $field, string $name) => [$name => strtolower($field['label'])])
+            ->all();
     }
 
     private function usesEmpresa(array $config): bool

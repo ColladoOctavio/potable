@@ -15,17 +15,20 @@
     @endif
     <div class="row g-3">
         @foreach($config['fields'] as $name => $field)
+            @php
+                $value = old($name, data_get($item, $name, $field['default'] ?? null));
+            @endphp
             <div class="{{ $field['type'] === 'textarea' ? 'col-12' : 'col-md-6' }}">
                 <label class="form-label">{{ $field['label'] }}</label>
                 @if($field['type'] === 'textarea')
-                    <textarea name="{{ $name }}" class="form-control" rows="3">{{ old($name, data_get($item, $name)) }}</textarea>
+                    <textarea name="{{ $name }}" class="form-control @error($name) is-invalid @enderror" rows="3" @required($field['required'] ?? false)>{{ $value }}</textarea>
                 @elseif($field['type'] === 'empresa')
                     <input type="hidden" name="{{ $name }}" value="{{ $activeEmpresa?->id }}">
                     <div class="form-control bg-light">{{ $activeEmpresa?->nombre ?? 'Sin empresa activa' }}</div>
                 @else
-                    <input type="{{ $field['type'] }}" step="{{ $field['step'] ?? '' }}" name="{{ $name }}" value="{{ old($name, data_get($item, $name)) }}" class="form-control" @required($field['required'] ?? false)>
+                    <input type="{{ $field['type'] }}" step="{{ $field['step'] ?? '' }}" name="{{ $name }}" value="{{ $value }}" class="form-control @error($name) is-invalid @enderror" @required($field['required'] ?? false)>
                 @endif
-                @error($name)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                @error($name)<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
             </div>
         @endforeach
     </div>

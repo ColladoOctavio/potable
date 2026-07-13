@@ -42,11 +42,12 @@ class VentaManager extends Component
 
     public function save(): void
     {
+        $this->normalizeForm();
         $data = $this->validate($this->rules())['form'];
         $data['empresa_id'] = $this->activeEmpresaId();
         $data['cliente_id'] = $data['cliente_id'] ?: null;
         $data['lote_id'] = $data['lote_id'] ?: null;
-        $data['importe_total'] = $this->total();
+        $data['importe_total'] = (float) $data['kilos'] * (float) $data['precio_por_kg'];
         $data['estado_cobro'] = 'pendiente';
 
         if ($this->editingId) {
@@ -118,6 +119,16 @@ class VentaManager extends Component
             'form.estado_cobro' => ['required', 'in:pendiente,parcial,cobrada'],
             'form.observacion' => ['nullable', 'string'],
         ];
+    }
+
+    private function normalizeForm(): void
+    {
+        foreach ($this->form as $key => $value) {
+            if (is_string($value)) {
+                $value = trim($value);
+                $this->form[$key] = $value === '' ? null : $value;
+            }
+        }
     }
 
     protected function messages(): array

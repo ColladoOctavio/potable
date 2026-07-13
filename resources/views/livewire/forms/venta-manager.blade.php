@@ -23,22 +23,22 @@
                                 <div class="col-md-4"><label class="form-label">Lote</label><select wire:model="form.lote_id" class="form-select"><option value="">Sin lote</option>@foreach($lotes as $l)<option value="{{ $l->id }}">{{ $l->nombre }}</option>@endforeach</select></div>
                                 <div class="col-md-3">
                                     <label class="form-label">Fecha</label>
-                                    <input type="date" wire:model="form.fecha" class="form-control @error('form.fecha') is-invalid @enderror">
+                                    <input type="date" wire:model="form.fecha" class="form-control @error('form.fecha') is-invalid @enderror" required>
                                     @error('form.fecha')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-5">
                                     <label class="form-label">Descripcion</label>
-                                    <input wire:model="form.descripcion" class="form-control @error('form.descripcion') is-invalid @enderror">
+                                    <input wire:model="form.descripcion" class="form-control @error('form.descripcion') is-invalid @enderror" required>
                                     @error('form.descripcion')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Kilos</label>
-                                    <input type="number" step="0.01" wire:model.live="form.kilos" class="form-control @error('form.kilos') is-invalid @enderror">
+                                    <input type="number" step="0.01" wire:model.live="form.kilos" class="form-control @error('form.kilos') is-invalid @enderror" required>
                                     @error('form.kilos')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Precio/kg</label>
-                                    <input type="number" step="0.01" wire:model.live="form.precio_por_kg" class="form-control @error('form.precio_por_kg') is-invalid @enderror">
+                                    <input type="number" step="0.01" wire:model.live="form.precio_por_kg" class="form-control @error('form.precio_por_kg') is-invalid @enderror" required>
                                     @error('form.precio_por_kg')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-4"><label class="form-label">Total</label><div class="form-control bg-light fw-bold">{{ $money($this->total()) }}</div></div>

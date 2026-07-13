@@ -45,6 +45,28 @@ class SaasClientController extends Controller
             ->with('success', 'Cliente creado: '.$tenant->nombre.'. El usuario ya puede ingresar con su email y clave.');
     }
 
+    public function suspend(Request $request, Tenant $tenant): RedirectResponse
+    {
+        $this->ensurePlatformAdmin($request);
+
+        $tenant->forceFill(['estado' => 'suspendido'])->save();
+
+        if ($request->session()->get('tenant_id') === $tenant->getKey()) {
+            $request->session()->forget(['tenant_id', 'empresa_id']);
+        }
+
+        return back()->with('success', 'Cliente inhabilitado: '.$tenant->nombre.'. Sus usuarios ya no pueden acceder.');
+    }
+
+    public function activate(Request $request, Tenant $tenant): RedirectResponse
+    {
+        $this->ensurePlatformAdmin($request);
+
+        $tenant->forceFill(['estado' => 'activo'])->save();
+
+        return back()->with('success', 'Cliente habilitado: '.$tenant->nombre.'. Sus usuarios ya pueden acceder.');
+    }
+
     private function ensurePlatformAdmin(Request $request): void
     {
         abort_unless($request->user()?->isPlatformAdmin(), 403);
@@ -55,6 +77,8 @@ class SaasClientController extends Controller
      */
     private function validatedData(Request $request): array
     {
+        $request->merge($this->normalizedInput($request->all()));
+
         $slug = Str::slug($request->input('tenant_slug') ?: $request->input('tenant_nombre'));
         $request->merge(['tenant_slug' => $slug]);
 
@@ -91,5 +115,24 @@ class SaasClientController extends Controller
             'empresa_email' => 'email de la empresa',
             'empresa_telefono' => 'telefono de la empresa',
         ])->validate();
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     * @return array<string, mixed>
+     */
+    private function normalizedInput(array $input): array
+    {
+        return collect($input)
+            ->map(function (mixed $value): mixed {
+                if (! is_string($value)) {
+                    return $value;
+                }
+
+                $value = trim($value);
+
+                return $value === '' ? null : $value;
+            })
+            ->all();
     }
 }

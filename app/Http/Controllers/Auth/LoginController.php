@@ -34,6 +34,17 @@ class LoginController extends Controller
 
         $tenants = $request->user()->tenants()->where('estado', '!=', 'suspendido')->get();
 
+        if ($tenants->isEmpty()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['email' => 'Tu cuenta no tiene un cliente activo. Contactá al administrador de PoTable.'])
+                ->onlyInput('email');
+        }
+
         if ($tenants->count() === 1) {
             $request->session()->put('tenant_id', $tenants->first()->id);
 

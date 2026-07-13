@@ -38,6 +38,7 @@ class GastoManager extends Component
 
     public function save(): void
     {
+        $this->normalizeForm();
         $data = $this->validate($this->rules())['form'];
         $data['empresa_id'] = $this->activeEmpresaId();
         $data['proveedor_id'] = $data['proveedor_id'] ?: null;
@@ -113,6 +114,16 @@ class GastoManager extends Component
             'form.estado_pago' => ['required', 'in:pendiente,parcial,pagado'],
             'form.observacion' => ['nullable', 'string'],
         ];
+    }
+
+    private function normalizeForm(): void
+    {
+        foreach ($this->form as $key => $value) {
+            if (is_string($value)) {
+                $value = trim($value);
+                $this->form[$key] = $value === '' ? null : $value;
+            }
+        }
     }
 
     protected function messages(): array

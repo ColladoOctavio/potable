@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class TenantSelectionController extends Controller
@@ -22,6 +23,14 @@ class TenantSelectionController extends Controller
 
                 return redirect()->route('dashboard');
             }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['email' => 'Tu cuenta no tiene un cliente activo. Contactá al administrador de PoTable.']);
         }
 
         $tenants = $this->availableTenantsQuery($request->user())->orderBy('nombre')->get();

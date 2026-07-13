@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/clientes-saas', [SaasClientController::class, 'index'])->name('admin.clientes-saas.index');
     Route::get('/admin/clientes-saas/crear', [SaasClientController::class, 'create'])->name('admin.clientes-saas.create');
     Route::post('/admin/clientes-saas', [SaasClientController::class, 'store'])->name('admin.clientes-saas.store');
+    Route::patch('/admin/clientes-saas/{tenant}/inhabilitar', [SaasClientController::class, 'suspend'])->name('admin.clientes-saas.suspend');
+    Route::patch('/admin/clientes-saas/{tenant}/habilitar', [SaasClientController::class, 'activate'])->name('admin.clientes-saas.activate');
 });
 
 Route::middleware(['auth', 'tenant.selected', 'empresa.active'])->group(function () {

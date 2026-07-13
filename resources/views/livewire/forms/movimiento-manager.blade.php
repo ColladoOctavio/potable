@@ -48,28 +48,28 @@
                                 <div class="col-md-4"><label class="form-label">Empresa</label><div class="form-control bg-light">{{ $activeEmpresa?->nombre ?? 'Sin empresa activa' }}</div></div>
                                 <div class="col-md-3">
                                     <label class="form-label">Fecha</label>
-                                    <input type="date" wire:model="form.fecha" class="form-control @error('form.fecha') is-invalid @enderror">
+                                    <input type="date" wire:model="form.fecha" class="form-control @error('form.fecha') is-invalid @enderror" required>
                                     @error('form.fecha')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Tipo</label>
-                                    <select wire:model.live="form.tipo" class="form-select @error('form.tipo') is-invalid @enderror"><option>ingreso</option><option>egreso</option><option>ajuste</option></select>
+                                    <select wire:model.live="form.tipo" class="form-select @error('form.tipo') is-invalid @enderror" required><option>ingreso</option><option>egreso</option><option>ajuste</option></select>
                                     @error('form.tipo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Importe</label>
-                                    <input type="number" step="0.01" wire:model="form.importe" class="form-control @error('form.importe') is-invalid @enderror">
+                                    <input type="number" step="0.01" wire:model="form.importe" class="form-control @error('form.importe') is-invalid @enderror" required>
                                     @error('form.importe')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Concepto</label>
-                                    <input wire:model="form.concepto" class="form-control @error('form.concepto') is-invalid @enderror">
+                                    <input wire:model="form.concepto" class="form-control @error('form.concepto') is-invalid @enderror" required>
                                     @error('form.concepto')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 @if($form['tipo'] !== 'ajuste')
                                     <div class="col-md-4">
                                         <label class="form-label">Origen</label>
-                                        <select wire:model="form.origen_id" class="form-select @error('form.origen_id') is-invalid @enderror">
+                                        <select wire:model="form.origen_id" class="form-select @error('form.origen_id') is-invalid @enderror" required>
                                             <option value="">{{ $form['tipo'] === 'ingreso' ? 'Seleccionar cliente' : 'Seleccionar proveedor' }}</option>
                                             @if($form['tipo'] === 'ingreso')
                                                 @foreach($clientes as $cliente)<option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>@endforeach
