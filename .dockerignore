@@ -1,0 +1,17 @@
+.git
+.agents
+.codex
+.env
+.env.*
+!.env.docker.example
+node_modules
+vendor
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+.phpunit.result.cache
+npm-debug.log
+Dockerfile
+docker-compose.yml
