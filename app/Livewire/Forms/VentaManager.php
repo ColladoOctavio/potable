@@ -6,6 +6,7 @@ use App\Models\Tenant\Cliente;
 use App\Models\Tenant\Empresa;
 use App\Models\Tenant\Lote;
 use App\Models\Tenant\Venta;
+use App\Services\Tenant\Ventas\VentaCreator;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -15,6 +16,7 @@ class VentaManager extends Component
     use WithPagination;
 
     public ?int $editingId = null;
+
     public bool $showForm = false;
 
     public array $form = [
@@ -23,9 +25,9 @@ class VentaManager extends Component
         'lote_id' => '',
         'fecha' => '',
         'descripcion' => '',
-        'kilos' => 0,
-        'precio_por_kg' => 0,
-        'estado_cobro' => 'pendiente',
+        'bolsas' => 0,
+        'precio_por_bolsa' => 0,
+        'peso_bolsa_kg' => 20,
         'observacion' => '',
     ];
 
@@ -33,11 +35,12 @@ class VentaManager extends Component
     {
         $this->form['fecha'] = now()->toDateString();
         $this->form['empresa_id'] = $this->activeEmpresaId();
+        $this->form['peso_bolsa_kg'] = $this->activeEmpresaPesoBolsa();
     }
 
     public function total(): float
     {
-        return (float) $this->form['kilos'] * (float) $this->form['precio_por_kg'];
+        return (float) $this->form['bolsas'] * (float) $this->form['precio_por_bolsa'];
     }
 
     public function save(): void
@@ -47,13 +50,13 @@ class VentaManager extends Component
         $data['empresa_id'] = $this->activeEmpresaId();
         $data['cliente_id'] = $data['cliente_id'] ?: null;
         $data['lote_id'] = $data['lote_id'] ?: null;
-        $data['importe_total'] = (float) $data['kilos'] * (float) $data['precio_por_kg'];
-        $data['estado_cobro'] = 'pendiente';
+        $data['peso_bolsa_kg'] = $data['peso_bolsa_kg'] ?: $this->activeEmpresaPesoBolsa();
+        $data['importe_total'] = (float) $data['bolsas'] * (float) $data['precio_por_bolsa'];
 
         if ($this->editingId) {
             Venta::where('empresa_id', $this->activeEmpresaId())->findOrFail($this->editingId)->update($data);
         } else {
-            Venta::create($data);
+            app(VentaCreator::class)->create($data);
         }
 
         $this->closeForm();
@@ -84,7 +87,7 @@ class VentaManager extends Component
     {
         $empresa = $this->activeEmpresaId();
         $this->editingId = null;
-        $this->form = ['empresa_id' => $empresa, 'cliente_id' => '', 'lote_id' => '', 'fecha' => now()->toDateString(), 'descripcion' => '', 'kilos' => 0, 'precio_por_kg' => 0, 'estado_cobro' => 'pendiente', 'observacion' => ''];
+        $this->form = ['empresa_id' => $empresa, 'cliente_id' => '', 'lote_id' => '', 'fecha' => now()->toDateString(), 'descripcion' => '', 'bolsas' => 0, 'precio_por_bolsa' => 0, 'peso_bolsa_kg' => $this->activeEmpresaPesoBolsa(), 'observacion' => ''];
         $this->resetValidation();
     }
 
@@ -114,9 +117,9 @@ class VentaManager extends Component
             'form.lote_id' => ['nullable', Rule::exists('lotes', 'id')->where('empresa_id', $this->activeEmpresaId())],
             'form.fecha' => ['required', 'date'],
             'form.descripcion' => ['required', 'string', 'max:255'],
-            'form.kilos' => ['required', 'numeric', 'min:0'],
-            'form.precio_por_kg' => ['required', 'numeric', 'min:0'],
-            'form.estado_cobro' => ['required', 'in:pendiente,parcial,cobrada'],
+            'form.bolsas' => ['required', 'numeric', 'min:0'],
+            'form.precio_por_bolsa' => ['required', 'numeric', 'min:0'],
+            'form.peso_bolsa_kg' => ['required', 'numeric', 'gt:0'],
             'form.observacion' => ['nullable', 'string'],
         ];
     }
@@ -138,19 +141,25 @@ class VentaManager extends Component
             'form.fecha.date' => 'Ingresá una fecha válida.',
             'form.descripcion.required' => 'Ingresá una descripción.',
             'form.descripcion.max' => 'La descripción no puede superar los 255 caracteres.',
-            'form.kilos.required' => 'Ingresá los kilos.',
-            'form.kilos.numeric' => 'Ingresá una cantidad de kilos válida.',
-            'form.kilos.min' => 'Los kilos no pueden ser negativos.',
-            'form.precio_por_kg.required' => 'Ingresá el precio por kg.',
-            'form.precio_por_kg.numeric' => 'Ingresá un precio por kg válido.',
-            'form.precio_por_kg.min' => 'El precio por kg no puede ser negativo.',
-            'form.estado_cobro.required' => 'Seleccioná un estado.',
-            'form.estado_cobro.in' => 'Seleccioná un estado válido.',
+            'form.bolsas.required' => 'Ingresá las bolsas.',
+            'form.bolsas.numeric' => 'Ingresá una cantidad de bolsas válida.',
+            'form.bolsas.min' => 'Las bolsas no pueden ser negativas.',
+            'form.precio_por_bolsa.required' => 'Ingresá el precio por bolsa.',
+            'form.precio_por_bolsa.numeric' => 'Ingresá un precio por bolsa válido.',
+            'form.precio_por_bolsa.min' => 'El precio por bolsa no puede ser negativo.',
+            'form.peso_bolsa_kg.required' => 'Ingresá el peso de la bolsa.',
+            'form.peso_bolsa_kg.numeric' => 'Ingresá un peso de bolsa válido.',
+            'form.peso_bolsa_kg.gt' => 'El peso de la bolsa debe ser mayor a 0.',
         ];
     }
 
     private function activeEmpresaId(): int
     {
         return (int) session('empresa_id');
+    }
+
+    private function activeEmpresaPesoBolsa(): float
+    {
+        return (float) (Empresa::whereKey($this->activeEmpresaId())->value('peso_bolsa_kg') ?? 20);
     }
 }

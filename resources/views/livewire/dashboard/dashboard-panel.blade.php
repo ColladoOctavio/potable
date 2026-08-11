@@ -17,7 +17,7 @@
             'pendiente_pago' => 'Pendiente de pago',
             'resultado' => 'Resultado estimado',
             'saldo' => 'Saldo de cuenta',
-            'kilos' => 'Kilos vendidos',
+            'bolsas' => 'Bolsas vendidas',
             'costo_hectarea' => 'Costo por hectarea',
             'clientes_deuda' => 'Clientes con deuda',
             'proveedores_deuda' => 'Proveedores con deuda',
@@ -26,7 +26,7 @@
                 <div class="metric-card p-3 h-100">
                     <div class="metric-label">{{ $label }}</div>
                     <div class="metric-value">
-                        @if(in_array($key, ['kilos', 'clientes_deuda', 'proveedores_deuda']))
+                        @if(in_array($key, ['bolsas', 'clientes_deuda', 'proveedores_deuda']))
                             {{ number_format($metrics[$key], 0, ',', '.') }}
                         @else
                             {{ $money($metrics[$key]) }}

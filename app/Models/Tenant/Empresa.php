@@ -12,7 +12,7 @@ class Empresa extends Model
 {
     use HasFactory, TenantConnection;
 
-    protected $fillable = ['nombre', 'cuit', 'email', 'telefono', 'direccion', 'observacion'];
+    protected $fillable = ['nombre', 'cuit', 'email', 'telefono', 'direccion', 'peso_bolsa_kg', 'observacion'];
 
     protected static function booted(): void
     {

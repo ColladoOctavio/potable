@@ -24,16 +24,18 @@ class ReporteVentas extends Component
             ->when($this->filtros['desde'], fn ($q, $v) => $q->whereDate('fecha', '>=', $v))
             ->when($this->filtros['hasta'], fn ($q, $v) => $q->whereDate('fecha', '<=', $v));
 
-        $summary = (clone $query)->selectRaw('sum(importe_total) total, sum(kilos) kilos, avg(precio_por_kg) promedio')->first();
+        $summary = (clone $query)->selectRaw('sum(importe_total) total, sum(bolsas) bolsas')->first();
+        $total = (float) $summary->total;
+        $bolsas = (float) $summary->bolsas;
 
         return view('livewire.reportes.reporte-ventas', [
             'clientes' => Cliente::where('empresa_id', $empresaId)->orderBy('nombre')->get(),
             'lotes' => Lote::where('empresa_id', $empresaId)->orderBy('nombre')->get(),
             'ventas' => $query->latest('fecha')->paginate(12),
             'summary' => [
-                'total' => (float) $summary->total,
-                'kilos' => (float) $summary->kilos,
-                'promedio' => (float) $summary->promedio,
+                'total' => $total,
+                'bolsas' => $bolsas,
+                'promedio' => $bolsas > 0 ? $total / $bolsas : 0,
             ],
         ]);
     }

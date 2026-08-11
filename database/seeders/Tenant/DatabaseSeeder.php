@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
         }
 
         $empresas = collect([
-            Empresa::create(['nombre' => 'Campo La Papa SA', 'cuit' => '30-71504011-8', 'email' => 'admin@lapapa.test', 'telefono' => '299 455-1001', 'direccion' => 'Ruta 22 km 1140']),
-            Empresa::create(['nombre' => 'Agro Andina SRL', 'cuit' => '30-71022014-4', 'email' => 'info@agroandina.test', 'telefono' => '299 455-1002', 'direccion' => 'Parque productivo norte']),
-            Empresa::create(['nombre' => 'Productores del Valle', 'cuit' => '30-70881010-1', 'email' => 'cuentas@valle.test', 'telefono' => '299 455-1003', 'direccion' => 'Colonia rural 3']),
+            Empresa::create(['nombre' => 'Campo La Papa SA', 'cuit' => '30-71504011-8', 'email' => 'admin@lapapa.test', 'telefono' => '299 455-1001', 'direccion' => 'Ruta 22 km 1140', 'peso_bolsa_kg' => 20]),
+            Empresa::create(['nombre' => 'Agro Andina SRL', 'cuit' => '30-71022014-4', 'email' => 'info@agroandina.test', 'telefono' => '299 455-1002', 'direccion' => 'Parque productivo norte', 'peso_bolsa_kg' => 20]),
+            Empresa::create(['nombre' => 'Productores del Valle', 'cuit' => '30-70881010-1', 'email' => 'cuentas@valle.test', 'telefono' => '299 455-1003', 'direccion' => 'Colonia rural 3', 'peso_bolsa_kg' => 20]),
         ]);
 
         $categorias = ['Semilla', 'Fertilizantes', 'Agroquímicos', 'Mano de obra', 'Maquinaria', 'Combustible', 'Riego', 'Transporte', 'Alquiler', 'Mantenimiento', 'Servicios', 'Otros'];
@@ -68,19 +68,19 @@ class DatabaseSeeder extends Seeder
                     'lote_id' => $lotes->random()->id,
                     'fecha' => now()->subDays(42 - ($i * 4))->toDateString(),
                     'descripcion' => 'Venta de papa consumo '.($i + 1),
-                    'kilos' => round((8500 + ($i * 900)) * $perfil['escala_ventas'], 2),
-                    'precio_por_kg' => round((170 + ($i * 8)) * $perfil['escala_precio'], 2),
-                    'estado_cobro' => ['cobrada', 'parcial', 'pendiente'][$i % 3],
+                    'bolsas' => round((425 + ($i * 45)) * $perfil['escala_ventas'], 2),
+                    'precio_por_bolsa' => round((3400 + ($i * 160)) * $perfil['escala_precio'], 2),
+                    'peso_bolsa_kg' => $empresa->peso_bolsa_kg,
                 ]);
 
-                if ($venta->estado_cobro !== 'pendiente') {
+                if ($i % 3 !== 2) {
                     MovimientoCuenta::create([
                         'empresa_id' => $empresa->id,
                         'cuenta_id' => $cuenta->id,
                         'fecha' => $venta->fecha,
                         'tipo' => 'ingreso',
                         'concepto' => 'Cobro de cliente '.$venta->cliente?->nombre,
-                        'importe' => $venta->estado_cobro === 'cobrada' ? $venta->importe_total : round($venta->importe_total * .45, 2),
+                        'importe' => $i % 3 === 0 ? $venta->importe_total : round($venta->importe_total * .45, 2),
                         'origen_type' => Cliente::class,
                         'origen_id' => $venta->cliente_id,
                     ]);

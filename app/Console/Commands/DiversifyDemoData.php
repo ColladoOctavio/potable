@@ -57,9 +57,10 @@ class DiversifyDemoData extends Command
             Cliente::where('empresa_id', $empresa->id)->where('nombre', 'Verdulerias Unidas')->update(['saldo_inicial' => round(18000 * $profile['saldo_cliente'], 2)]);
             Proveedor::where('empresa_id', $empresa->id)->where('nombre', 'Fertil Agro')->update(['saldo_inicial' => round(32000 * $profile['saldo_proveedor'], 2)]);
 
-            Venta::where('empresa_id', $empresa->id)->orderBy('id')->get()->each(function (Venta $venta, int $ventaIndex) use ($profile) {
-                $venta->kilos = round((8500 + ($ventaIndex * 900)) * $profile['escala_ventas'], 2);
-                $venta->precio_por_kg = round((170 + ($ventaIndex * 8)) * $profile['escala_precio'], 2);
+            Venta::where('empresa_id', $empresa->id)->orderBy('id')->get()->each(function (Venta $venta, int $ventaIndex) use ($profile, $empresa) {
+                $venta->bolsas = round((425 + ($ventaIndex * 45)) * $profile['escala_ventas'], 2);
+                $venta->precio_por_bolsa = round((3400 + ($ventaIndex * 160)) * $profile['escala_precio'], 2);
+                $venta->peso_bolsa_kg = $empresa->peso_bolsa_kg ?: 20;
                 $venta->save();
             });
 

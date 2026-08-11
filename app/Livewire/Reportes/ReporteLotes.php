@@ -29,13 +29,13 @@ class ReporteLotes extends Component
 
                 $totalVentas = (float) (clone $ventas)->sum('importe_total');
                 $totalGastos = (float) (clone $gastos)->sum('importe_total');
-                $kilos = (float) (clone $ventas)->sum('kilos');
+                $bolsas = (float) (clone $ventas)->sum('bolsas');
 
                 $lote->total_ventas = $totalVentas;
                 $lote->total_gastos = $totalGastos;
                 $lote->resultado = $totalVentas - $totalGastos;
                 $lote->costo_hectarea = $lote->hectareas > 0 ? $totalGastos / $lote->hectareas : 0;
-                $lote->kilos_hectarea = $lote->hectareas > 0 ? $kilos / $lote->hectareas : 0;
+                $lote->bolsas_hectarea = $lote->hectareas > 0 ? $bolsas / $lote->hectareas : 0;
 
                 return $lote;
             });

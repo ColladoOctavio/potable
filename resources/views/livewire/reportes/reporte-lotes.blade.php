@@ -5,7 +5,7 @@
         <div class="col-md-3"><input type="date" wire:model.live="filtros.desde" class="form-control"></div>
         <div class="col-md-3"><input type="date" wire:model.live="filtros.hasta" class="form-control"></div>
     </div>
-    <section class="panel p-3"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Lote</th><th>Empresa</th><th>Ha</th><th>Ventas</th><th>Gastos</th><th>Resultado</th><th>Costo/ha</th><th>Kg/ha</th></tr></thead><tbody>
-        @foreach($lotes as $l)<tr><td>{{ $l->nombre }}</td><td>{{ $l->empresa->nombre }}</td><td>{{ number_format($l->hectareas, 2, ',', '.') }}</td><td>{{ $money($l->total_ventas) }}</td><td>{{ $money($l->total_gastos) }}</td><td>{{ $money($l->resultado) }}</td><td>{{ $money($l->costo_hectarea) }}</td><td>{{ number_format($l->kilos_hectarea, 0, ',', '.') }}</td></tr>@endforeach
+    <section class="panel p-3"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Lote</th><th>Empresa</th><th>Ha</th><th>Ventas</th><th>Gastos</th><th>Resultado</th><th>Costo/ha</th><th>Bolsas/ha</th></tr></thead><tbody>
+        @foreach($lotes as $l)<tr><td>{{ $l->nombre }}</td><td>{{ $l->empresa->nombre }}</td><td>{{ number_format($l->hectareas, 2, ',', '.') }}</td><td>{{ $money($l->total_ventas) }}</td><td>{{ $money($l->total_gastos) }}</td><td>{{ $money($l->resultado) }}</td><td>{{ $money($l->costo_hectarea) }}</td><td>{{ number_format($l->bolsas_hectarea, 0, ',', '.') }}</td></tr>@endforeach
     </tbody></table></div></section>
 </div>

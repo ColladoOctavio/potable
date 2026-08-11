@@ -32,16 +32,21 @@
                                     @error('form.descripcion')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="form-label">Kilos</label>
-                                    <input type="number" step="0.01" wire:model.live="form.kilos" class="form-control @error('form.kilos') is-invalid @enderror" required>
-                                    @error('form.kilos')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    <label class="form-label">Bolsas</label>
+                                    <input type="number" step="0.01" wire:model.live="form.bolsas" class="form-control @error('form.bolsas') is-invalid @enderror" required>
+                                    @error('form.bolsas')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="form-label">Precio/kg</label>
-                                    <input type="number" step="0.01" wire:model.live="form.precio_por_kg" class="form-control @error('form.precio_por_kg') is-invalid @enderror" required>
-                                    @error('form.precio_por_kg')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    <label class="form-label">Precio/bolsa</label>
+                                    <input type="number" step="0.01" wire:model.live="form.precio_por_bolsa" class="form-control @error('form.precio_por_bolsa') is-invalid @enderror" required>
+                                    @error('form.precio_por_bolsa')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="col-md-4"><label class="form-label">Total</label><div class="form-control bg-light fw-bold">{{ $money($this->total()) }}</div></div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Kg/bolsa</label>
+                                    <input type="number" step="0.01" wire:model="form.peso_bolsa_kg" class="form-control @error('form.peso_bolsa_kg') is-invalid @enderror" required>
+                                    @error('form.peso_bolsa_kg')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-md-2"><label class="form-label">Total</label><div class="form-control bg-light fw-bold">{{ $money($this->total()) }}</div></div>
                             </div>
                         </div>
                         <div class="modal-footer">

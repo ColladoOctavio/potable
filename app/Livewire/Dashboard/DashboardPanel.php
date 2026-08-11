@@ -58,7 +58,7 @@ class DashboardPanel extends Component
                 'pendiente_pago' => $proveedoresConSaldo->filter(fn (float $saldo) => $saldo > 0)->sum(),
                 'resultado' => $totalVentas - $totalGastos,
                 'saldo' => $saldoInicial + $ingresosCuenta - $egresosCuenta + $ajustes,
-                'kilos' => (float) (clone $ventas)->sum('kilos'),
+                'bolsas' => (float) (clone $ventas)->sum('bolsas'),
                 'costo_hectarea' => $hectareas > 0 ? $totalGastos / $hectareas : 0,
                 'clientes_deuda' => $clientesConSaldo->filter(fn (float $saldo) => $saldo < 0)->count(),
                 'proveedores_deuda' => $proveedoresConSaldo->filter(fn (float $saldo) => $saldo > 0)->count(),

@@ -27,9 +27,10 @@ class CrudController extends Controller
                 'email' => ['label' => 'Email', 'type' => 'email'],
                 'telefono' => ['label' => 'Telefono', 'type' => 'text'],
                 'direccion' => ['label' => 'Direccion', 'type' => 'text'],
+                'peso_bolsa_kg' => ['label' => 'Kg por bolsa', 'type' => 'number', 'step' => '0.01', 'required' => true, 'default' => 20],
                 'observacion' => ['label' => 'Observacion', 'type' => 'textarea'],
             ],
-            'columns' => ['nombre', 'cuit', 'email', 'telefono'],
+            'columns' => ['nombre', 'cuit', 'email', 'telefono', 'peso_bolsa_kg'],
         ],
         'lotes' => [
             'model' => Lote::class,
@@ -205,7 +206,7 @@ class CrudController extends Controller
                 default => 'string',
             };
 
-            if ($name === 'hectareas') {
+            if (in_array($name, ['hectareas', 'peso_bolsa_kg'], true)) {
                 $fieldRules[] = 'gt:0';
             }
 

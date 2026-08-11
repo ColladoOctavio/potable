@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('telefono')->nullable();
             $table->string('direccion')->nullable();
+            $table->decimal('peso_bolsa_kg', 8, 2)->default(20);
             $table->text('observacion')->nullable();
             $table->timestamps();
         });
@@ -84,10 +85,10 @@ return new class extends Migration
             $table->foreignId('lote_id')->nullable()->constrained('lotes')->nullOnDelete();
             $table->date('fecha');
             $table->string('descripcion');
-            $table->decimal('kilos', 14, 2);
-            $table->decimal('precio_por_kg', 14, 2);
+            $table->decimal('bolsas', 14, 2);
+            $table->decimal('precio_por_bolsa', 14, 2);
+            $table->decimal('peso_bolsa_kg', 8, 2)->default(20);
             $table->decimal('importe_total', 14, 2);
-            $table->enum('estado_cobro', ['pendiente', 'parcial', 'cobrada'])->default('pendiente');
             $table->text('observacion')->nullable();
             $table->timestamps();
         });
