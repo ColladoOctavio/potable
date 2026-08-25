@@ -11,6 +11,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            $this->command?->warn('Seeder demo omitido en producción.');
+
+            return;
+        }
+
         $admin = User::updateOrCreate(
             ['email' => 'admin@potable.test'],
             ['name' => 'Admin PoTable', 'password' => 'password', 'is_platform_admin' => true],

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Central\Bots\TelegramWebhookController;
 use App\Http\Controllers\Central\SaasClientController;
 use App\Http\Controllers\Central\TenantSelectionController;
+use App\Http\Controllers\Tenant\BotLinkController;
 use App\Http\Controllers\Tenant\CrudController;
 use App\Http\Controllers\Tenant\CuentaController;
 use App\Http\Controllers\Tenant\DashboardController;
@@ -11,6 +13,8 @@ use App\Http\Controllers\Tenant\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
+
+Route::post('/webhooks/telegram', TelegramWebhookController::class)->name('webhooks.telegram');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'show'])->name('login');
@@ -33,6 +37,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'tenant.selected', 'empresa.active'])->group(function () {
     Route::post('/empresa-activa', [EmpresaActivaController::class, 'update'])->name('empresa-activa.update');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/bots/telegram', [BotLinkController::class, 'show'])->name('bots.telegram.index');
+    Route::post('/bots/telegram/codigo', [BotLinkController::class, 'store'])->name('bots.telegram.codigo.store');
 
     foreach (['empresas', 'lotes', 'clientes', 'proveedores', 'categorias-gastos'] as $resource) {
         Route::get("/{$resource}", [CrudController::class, 'index'])->defaults('resource', $resource)->name("{$resource}.index");

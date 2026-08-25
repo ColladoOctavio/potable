@@ -6,6 +6,9 @@
 !.env.docker.example
 node_modules
 vendor
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+public/storage
 storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/testing/*
@@ -14,4 +17,5 @@ storage/logs/*
 .phpunit.result.cache
 npm-debug.log
 Dockerfile
+Dockerfile.local
 docker-compose.yml

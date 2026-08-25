@@ -7,7 +7,33 @@
         <div class="col-md-3"><input type="date" wire:model.live="filtros.hasta" class="form-control"></div>
     </div>
     @include('livewire.reportes.partials.metricas', ['items' => ['Total vendido' => $summary['total'], 'Bolsas vendidas' => number_format($summary['bolsas'], 0, ',', '.').' bolsas', 'Precio promedio/bolsa' => $summary['promedio']]])
-    <section class="panel p-3"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Fecha</th><th>Empresa</th><th>Cliente</th><th>Lote</th><th>Bolsas</th><th>Total</th></tr></thead><tbody>
-        @foreach($ventas as $v)<tr><td>{{ $v->fecha->format('d/m/Y') }}</td><td>{{ $v->empresa->nombre }}</td><td>{{ $v->cliente?->nombre ?? '-' }}</td><td>{{ $v->lote?->nombre ?? '-' }}</td><td>{{ number_format($v->bolsas, 0, ',', '.') }}</td><td>{{ $money($v->importe_total) }}</td></tr>@endforeach
-    </tbody></table></div>{{ $ventas->links() }}</section>
+    <section class="panel p-3">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        @include('livewire.reportes.partials.sortable-th', ['field' => 'fecha', 'label' => 'Fecha'])
+                        @include('livewire.reportes.partials.sortable-th', ['field' => 'empresa', 'label' => 'Empresa'])
+                        @include('livewire.reportes.partials.sortable-th', ['field' => 'cliente', 'label' => 'Cliente'])
+                        @include('livewire.reportes.partials.sortable-th', ['field' => 'lote', 'label' => 'Lote'])
+                        @include('livewire.reportes.partials.sortable-th', ['field' => 'bolsas', 'label' => 'Bolsas'])
+                        @include('livewire.reportes.partials.sortable-th', ['field' => 'total', 'label' => 'Total'])
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($ventas as $v)
+                        <tr>
+                            <td>{{ $v->fecha->format('d/m/Y') }}</td>
+                            <td>{{ $v->empresa->nombre }}</td>
+                            <td>{{ $v->cliente?->nombre ?? '-' }}</td>
+                            <td>{{ $v->lote?->nombre ?? '-' }}</td>
+                            <td>{{ number_format($v->bolsas, 0, ',', '.') }}</td>
+                            <td>{{ $money($v->importe_total) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        {{ $ventas->links() }}
+    </section>
 </div>

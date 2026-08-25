@@ -97,3 +97,18 @@ php artisan view:cache
 ```
 
 En el entorno usado para esta maqueta, `npm run build` queda bloqueado por Node `18.19.1`; Vite 8 requiere Node `20.19+`.
+
+## Produccion
+
+La configuracion base para VPS esta en:
+
+- `.env.production.example`
+- `docker-compose.prod.yml`
+- `Dockerfile.prod`
+- `Dockerfile.local`
+- `docs/production-deploy.md`
+- `docs/production-configuration-decisions.md`
+- `docs/production-cicd-stage1.md`
+
+El despliegue productivo usa Caddy con HTTPS automatico, PHP-FPM, MySQL y un worker de colas.
+Railway usa autodeteccion desde GitHub; por eso el Dockerfile local no esta en la raiz como `Dockerfile`.

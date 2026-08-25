@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -22,10 +25,15 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
+        $this->ensureLoginIsNotRateLimited($request);
+
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            RateLimiter::hit($this->loginThrottleKey($request), 60);
+
             return back()->withErrors(['email' => 'Las credenciales no son correctas.'])->onlyInput('email');
         }
 
+        RateLimiter::clear($this->loginThrottleKey($request));
         $request->session()->regenerate();
 
         if ($request->user()->isPlatformAdmin()) {
@@ -61,5 +69,23 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    private function ensureLoginIsNotRateLimited(Request $request): void
+    {
+        if (! RateLimiter::tooManyAttempts($this->loginThrottleKey($request), 5)) {
+            return;
+        }
+
+        $seconds = RateLimiter::availableIn($this->loginThrottleKey($request));
+
+        throw ValidationException::withMessages([
+            'email' => "Demasiados intentos. Proba de nuevo en {$seconds} segundos.",
+        ]);
+    }
+
+    private function loginThrottleKey(Request $request): string
+    {
+        return Str::lower((string) $request->input('email')).'|'.$request->ip();
     }
 }

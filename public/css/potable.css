@@ -107,6 +107,57 @@ body {
     color: #fff;
 }
 
+.sidebar-group {
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    padding-top: .5rem;
+}
+
+.sidebar-group + .sidebar-group {
+    margin-top: .5rem;
+}
+
+.sidebar-group-toggle {
+    align-items: center;
+    border-radius: .375rem;
+    color: rgba(255, 255, 255, .72);
+    cursor: pointer;
+    display: flex;
+    font-size: .78rem;
+    font-weight: 700;
+    justify-content: space-between;
+    letter-spacing: .04em;
+    list-style: none;
+    margin-bottom: .25rem;
+    padding: .55rem .8rem;
+    text-transform: uppercase;
+}
+
+.sidebar-group-toggle:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.sidebar-group-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.sidebar-group-chevron {
+    font-size: 1.15rem;
+    line-height: 1;
+    transform: rotate(0deg);
+    transition: transform .15s ease;
+}
+
+.sidebar-group[open] .sidebar-group-chevron {
+    transform: rotate(90deg);
+}
+
+.sidebar-group-items {
+    display: grid;
+    gap: .25rem;
+    padding-bottom: .35rem;
+}
+
 .main-area {
     flex: 1;
     min-width: 0;

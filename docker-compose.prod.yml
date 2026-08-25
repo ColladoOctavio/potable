@@ -1,0 +1,77 @@
+x-potable-env: &potable-env
+  env_file:
+    - ${POTABLE_ENV_FILE:-.env.production}
+
+x-potable-php: &potable-php
+  <<: *potable-env
+  image: potable-app:${POTABLE_IMAGE_TAG:-production}
+  build:
+    context: .
+    dockerfile: Dockerfile.prod
+    target: php
+  restart: unless-stopped
+  depends_on:
+    mysql:
+      condition: service_healthy
+  volumes:
+    - potable_storage:/var/www/html/storage
+  networks:
+    - potable_internal
+
+services:
+  app:
+    <<: *potable-php
+
+  queue:
+    <<: *potable-php
+    command: ["php", "artisan", "queue:work", "database", "--sleep=3", "--tries=3", "--timeout=90", "--max-time=3600"]
+    stop_grace_period: 30s
+
+  web:
+    <<: *potable-env
+    image: potable-web:${POTABLE_IMAGE_TAG:-production}
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: caddy
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - potable_storage:/var/www/html/storage:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - potable_internal
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-potable_central}
+      MYSQL_USER: ${MYSQL_USER:-potable}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Falta MYSQL_PASSWORD}
+    volumes:
+      - potable_mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - potable_internal
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  potable_mysql_data:
+  potable_storage:
+  caddy_data:
+  caddy_config:
+
+networks:
+  potable_internal:
+    driver: bridge

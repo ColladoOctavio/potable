@@ -1,0 +1,28 @@
+{$APP_DOMAIN} {
+    root * /var/www/html/public
+    encode zstd gzip
+    request_body {
+        max_size 20MB
+    }
+
+    php_fastcgi app:9000
+    file_server
+
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    @hidden {
+        path /.*
+        not path /.well-known/*
+    }
+    respond @hidden 404
+
+    log {
+        output stdout
+        format console
+    }
+}

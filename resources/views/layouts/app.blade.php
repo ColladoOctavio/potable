@@ -24,6 +24,7 @@
         ['route' => 'gastos.index', 'label' => 'Gastos'],
         ['route' => 'ventas.index', 'label' => 'Ventas'],
         ['route' => 'cuenta.show', 'label' => 'Cuenta'],
+        ['route' => 'bots.telegram.index', 'label' => 'Bot'],
     ];
     $reportes = [
         ['route' => 'reportes.general', 'label' => 'General'],
@@ -33,6 +34,15 @@
         ['route' => 'reportes.proveedores', 'label' => 'Proveedores'],
         ['route' => 'reportes.lotes', 'label' => 'Lotes'],
     ];
+    $groupIsActive = function (array $items): bool {
+        foreach ($items as $item) {
+            if (request()->routeIs($item['route'])) {
+                return true;
+            }
+        }
+
+        return false;
+    };
 @endphp
 <div class="app-shell">
     <aside class="sidebar p-3">
@@ -44,13 +54,28 @@
             </span>
         </a>
         <nav class="nav flex-column gap-1">
-            @foreach($nav as $item)
-                <a class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}" href="{{ route($item['route']) }}">{{ $item['label'] }}</a>
-            @endforeach
-            <div class="small text-uppercase text-white-50 mt-3 mb-1">Reportes</div>
-            @foreach($reportes as $item)
-                <a class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}" href="{{ route($item['route']) }}">{{ $item['label'] }}</a>
-            @endforeach
+            <details class="sidebar-group" {{ $groupIsActive($nav) ? 'open' : '' }}>
+                <summary class="sidebar-group-toggle">
+                    <span>Gestion</span>
+                    <span class="sidebar-group-chevron" aria-hidden="true">›</span>
+                </summary>
+                <div class="sidebar-group-items">
+                    @foreach($nav as $item)
+                        <a class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}" href="{{ route($item['route']) }}">{{ $item['label'] }}</a>
+                    @endforeach
+                </div>
+            </details>
+            <details class="sidebar-group" {{ $groupIsActive($reportes) ? 'open' : '' }}>
+                <summary class="sidebar-group-toggle">
+                    <span>Reportes</span>
+                    <span class="sidebar-group-chevron" aria-hidden="true">›</span>
+                </summary>
+                <div class="sidebar-group-items">
+                    @foreach($reportes as $item)
+                        <a class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}" href="{{ route($item['route']) }}">{{ $item['label'] }}</a>
+                    @endforeach
+                </div>
+            </details>
         </nav>
     </aside>
     <div class="main-area">

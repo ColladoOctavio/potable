@@ -9,7 +9,37 @@
     </div>
     @include('livewire.reportes.partials.metricas', ['items' => ['Total gastos' => $summary['total']]])
     <div class="row g-3">
-        <div class="col-lg-8"><section class="panel p-3"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Fecha</th><th>Empresa</th><th>Proveedor</th><th>Categoria</th><th>Total</th></tr></thead><tbody>@foreach($gastos as $g)<tr><td>{{ $g->fecha->format('d/m/Y') }}</td><td>{{ $g->empresa->nombre }}</td><td>{{ $g->proveedor?->nombre ?? '-' }}</td><td>{{ $g->categoriaGasto?->nombre ?? '-' }}</td><td>{{ $money($g->importe_total) }}</td></tr>@endforeach</tbody></table></div>{{ $gastos->links() }}</section></div>
+        <div class="col-lg-8">
+            <section class="panel p-3">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                @include('livewire.reportes.partials.sortable-th', ['field' => 'fecha', 'label' => 'Fecha'])
+                                @include('livewire.reportes.partials.sortable-th', ['field' => 'empresa', 'label' => 'Empresa'])
+                                @include('livewire.reportes.partials.sortable-th', ['field' => 'proveedor', 'label' => 'Proveedor'])
+                                @include('livewire.reportes.partials.sortable-th', ['field' => 'categoria', 'label' => 'Categoria'])
+                                @include('livewire.reportes.partials.sortable-th', ['field' => 'lote', 'label' => 'Lote'])
+                                @include('livewire.reportes.partials.sortable-th', ['field' => 'total', 'label' => 'Total'])
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($gastos as $g)
+                                <tr>
+                                    <td>{{ $g->fecha->format('d/m/Y') }}</td>
+                                    <td>{{ $g->empresa->nombre }}</td>
+                                    <td>{{ $g->proveedor?->nombre ?? '-' }}</td>
+                                    <td>{{ $g->categoriaGasto?->nombre ?? '-' }}</td>
+                                    <td>{{ $g->lote?->nombre ?? '-' }}</td>
+                                    <td>{{ $money($g->importe_total) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                {{ $gastos->links() }}
+            </section>
+        </div>
         <div class="col-lg-4"><section class="panel p-3"><h2 class="h6">Resumen por categoria</h2>@foreach($porCategoria as $row)<div class="d-flex justify-content-between border-bottom py-2"><span>{{ $row->categoriaGasto?->nombre }}</span><strong>{{ $money($row->total) }}</strong></div>@endforeach</section></div>
     </div>
 </div>

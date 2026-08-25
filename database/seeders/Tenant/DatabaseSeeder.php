@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            $this->command?->warn('Seeder tenant demo omitido en producción.');
+
+            return;
+        }
+
         if (Empresa::query()->exists()) {
             return;
         }
