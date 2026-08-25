@@ -11,9 +11,7 @@ use RuntimeException;
 
 class SaasClientCreator
 {
-    public function __construct(private readonly TenantProvisioner $tenantProvisioner)
-    {
-    }
+    public function __construct(private readonly TenantProvisioner $tenantProvisioner) {}
 
     /**
      * @param  array{

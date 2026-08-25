@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Tenant\Cliente;
 use App\Models\Tenant\Cuenta;
 use App\Models\Tenant\Empresa;
-use App\Models\Tenant\Cliente;
 use App\Models\Tenant\MovimientoCuenta;
 use App\Models\Tenant\Proveedor;
 use Illuminate\Validation\Rule;

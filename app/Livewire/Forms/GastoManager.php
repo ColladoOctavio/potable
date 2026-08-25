@@ -16,6 +16,7 @@ class GastoManager extends Component
     use WithPagination;
 
     public ?int $editingId = null;
+
     public bool $showForm = false;
 
     public array $form = [
