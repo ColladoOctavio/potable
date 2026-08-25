@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureActiveEmpresa;
 use App\Http\Middleware\InitializeSelectedTenant;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Paginator::useBootstrapFive();
 
         Livewire::setUpdateRoute(function ($handle, $path) {
