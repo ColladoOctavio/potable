@@ -6,7 +6,7 @@
     <title>@yield('title', 'PoTable')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('brand/potable-mark.svg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ asset('css/potable.css') }}" rel="stylesheet">
+    @include('partials.potable-styles')
 </head>
 <body>
 <div class="app-shell">
