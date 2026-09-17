@@ -1,5 +1,47 @@
 # PoTable
 
+PoTable es un proyecto personal full stack en desarrollo orientado a la gestión comercial y contable de productores y pequeñas empresas. La aplicación centraliza ventas, gastos, clientes, proveedores, lotes, cuentas y reportes, e incorpora una integración con Telegram para registrar ventas mediante una interfaz conversacional.
+
+## Presentación del proyecto
+
+El proyecto fue desarrollado con foco en una arquitectura SaaS multi-tenant. Cada tenant dispone de su propia base de datos y puede administrar múltiples empresas, manteniendo separada la información de cada cliente.
+
+Entre las funcionalidades principales se incluyen:
+
+- Gestión de empresas, lotes, clientes, proveedores y categorías de gasto.
+- Registro y seguimiento de ventas, gastos y movimientos de cuenta.
+- Cuenta única por empresa con cálculo de saldo.
+- Dashboard y reportes de ventas, gastos, clientes, proveedores y lotes.
+- Vista individual por empresa y vista consolidada.
+- Integración con un bot de Telegram para registrar ventas desde el chat.
+- Administración central de tenants y usuarios de la plataforma.
+
+### Stack principal
+
+- PHP y Laravel
+- Blade y Livewire
+- Bootstrap 5
+- MySQL
+- Docker y Docker Compose
+- Eloquent ORM, migraciones y seeders
+- Multi-database tenancy con `stancl/tenancy`
+- GitHub Actions para CI
+
+### Aspectos técnicos destacados
+
+- Separación de datos mediante multi-database tenancy.
+- Aprovisionamiento de nuevos tenants, incluyendo creación de base, migraciones y datos demo.
+- Integración con la API de Telegram mediante webhooks, vinculación de usuarios y flujo conversacional para carga de ventas.
+- Tests unitarios y de integración para autenticación, Telegram y lógica de negocio.
+- Configuración de CI con validación de formato, ejecución de tests y auditoría de dependencias.
+- Configuración de despliegue con Docker, PHP-FPM, MySQL y Caddy con HTTPS automático.
+
+> **Estado:** proyecto personal en desarrollo. El repositorio incluye datos y credenciales exclusivamente de demostración para facilitar la ejecución local.
+
+---
+
+## Documentación técnica y puesta en marcha
+
 PoTable es una primera maqueta funcional de SaaS contable simple para productores o empresas paperas.
 
 Stack principal:
